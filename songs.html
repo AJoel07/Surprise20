@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    <title>Songs - For You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Quicksand:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="songs">
+    <div class="glow-overlay"></div>
+    <div class="floating-hearts" aria-hidden="true"></div>
+
+    <main class="site page-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Unakkaga</p>
+          <h1 class="section-title">En koochalgal !</h1>
+          <p class="section-subtitle">Even in my worst situation I would sing if it's for you <3 </p>
+        </div>
+      </header>
+
+      <nav class="section-nav" aria-label="Sections">
+        <a class="active" href="songs.html">En Koochalgal</a>
+        <a href="letters.html">Avalukkana enathu mental drafts</a>
+      </nav>
+
+      <section class="section visible">
+        <div class="songs-toolbar">
+          <label class="search-field" for="song-search">
+            <input
+              id="song-search"
+              type="search"
+              placeholder="Type a song title..."
+              autocomplete="off"
+            />
+          </label>
+        </div>
+        <div class="songs-list" id="songs-list"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

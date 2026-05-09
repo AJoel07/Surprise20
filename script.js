@@ -18,40 +18,28 @@ const notes = [
   },
   {
     id: 2,
-    text: ""
+    text: "Unnodu naan vaala oru nooru aandugal pothathae ! Oru aayiram yugangal thanthaalum en yaekkangal theerathae !"
   },
   {
     id: 3,
-    text: ""
+    text: "Idhu varaiyil un ninaivil ! Ippotho satru tholaivil ! Iniyo un arugil ! Endrum unnudayathaaga ! Unakkaaga !"
   },
   {
     id: 4,
-    text: "."
+    text: "Naan paarthu rasitha kangal ! Ennai paartha kangal ! Enakkai alutha kangal ! Ennal alutha kangal ! Ennai thediya kangal ! Naan thedum Kangal ! En algiyin kangal ! En algiya kangal ! Avalathu kangal !"
   },
   {
     id: 5,
-    text: ""
+    text: "Unnudan kalitha naatkal ellam nodigaladi ! Nee illatha nodigal ellam varudamadi ! Eppothu servaen unnidam yengugirathu en nejamadi ! Un malalai pechin kural ennullae thonikuthadi ! Nee arugil illathapothellam en ullae noguthadi ! En vaalvin nodigalo nimidamo varudamo yugamo ! endrum en uyir moochu neeyadi !"
   },
   {
     id: 6,
-    text: ""
+    text: "Thediyum kidaikaathu endru ninaithathu ! kidaithum nadakkaathu endru ninaithathu ! Nadanthum urimaiyaagathu endru ninaithathu ! Ennudaiyathaaga ! En urimaiyaaga ! Oor ariya epothu maarum ! Kaalam kadanthum kaathiruppen unakaaga mattum <3 "
   },
   {
     id: 7,
-    text: "."
+    text: "Un netriyin oramaai aadiya otrai mudi ! Un kangalil varuda ! Un kanangalil thavala ! Un siriya malalai kaigalal un kaadhin oram nagatra ! Un otrai mudiyil en uyirai thulaithen ! Siru asaivil en idhayathai thirudinai ! En uyirai thulaitha unnidam ennai thulaithen ! Theda manathillai ! Thediyum kidaikaatha aalathil dhinamum thulaiya virumbugiren !"
   },
-  {
-    id: 8,
-    text: ""
-  },
-  {
-    id: 9,
-    text: ""
-  },
-  {
-    id: 10,
-    text: ""
-  }
 ];
 
 const getVisibleNotes = () => notes.filter((note) => note.text.trim());

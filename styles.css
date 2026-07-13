@@ -739,6 +739,10 @@ audio {
   accent-color: var(--rose);
 }
 
+.song-player:not(:empty) {
+  margin-top: 0.85rem;
+}
+
 .message-card {
   min-height: 178px;
   display: flex;

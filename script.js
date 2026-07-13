@@ -1,5 +1,6 @@
 const SECRET_PASSWORD = "love";
 const UNLOCK_KEY = "forYouUnlocked";
+let activeSongPlayer = null;
 
 const songs = [
   {
@@ -177,17 +178,61 @@ const renderSongs = () => {
     const item = document.createElement("article");
     item.className = "song-item";
     item.id = song.id;
-    const mediaType = song.file.toLowerCase().endsWith(".mp4")
-      ? "audio/mp4"
-      : "audio/mpeg";
     item.innerHTML = `
       <h2>${song.title}</h2>
-      <audio controls preload="metadata">
-        <source src="${song.file}" type="${mediaType}" />
-        Your browser cannot play this track.
-      </audio>
+      <button class="btn small song-play" type="button" aria-pressed="false">Play song</button>
+      <div class="song-player" aria-live="polite"></div>
       <p class="song-note">${song.note}</p>
     `;
+
+    const playButton = item.querySelector(".song-play");
+    const playerSlot = item.querySelector(".song-player");
+
+    playButton.addEventListener("click", () => {
+      if (activeSongPlayer?.item !== item) {
+        if (activeSongPlayer) {
+          activeSongPlayer.audio.pause();
+          activeSongPlayer.button.textContent = "Play song";
+          activeSongPlayer.button.setAttribute("aria-pressed", "false");
+        }
+
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload = "none";
+        audio.src = song.file;
+        playerSlot.replaceChildren(audio);
+        activeSongPlayer = { item, audio, button: playButton };
+
+        audio.addEventListener("pause", () => {
+          if (!audio.ended) {
+            playButton.textContent = "Play song";
+            playButton.setAttribute("aria-pressed", "false");
+          }
+        });
+        audio.addEventListener("ended", () => {
+          playButton.textContent = "Play song";
+          playButton.setAttribute("aria-pressed", "false");
+        });
+        audio.addEventListener("error", () => {
+          playButton.textContent = "Unable to play";
+          playButton.setAttribute("aria-pressed", "false");
+          playerSlot.textContent = "This track could not be loaded.";
+          activeSongPlayer = null;
+        });
+      }
+
+      const { audio } = activeSongPlayer;
+      if (audio.paused) {
+        audio.play().then(() => {
+          playButton.textContent = "Pause song";
+          playButton.setAttribute("aria-pressed", "true");
+        }).catch(() => {
+          playButton.textContent = "Tap to play";
+        });
+      } else {
+        audio.pause();
+      }
+    });
     songsList.appendChild(item);
   });
 };

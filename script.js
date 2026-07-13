@@ -41,7 +41,7 @@ const songs = [
   {
     id: "7",
     title: "Un Viligalil Viluntha Naatkalil",
-    file:  "assets/un viligalil viluntha naatkal.mp3",
+    file:  "assets/un vilingalil viluntha naatkal.mp3",
     note: ""
   },
   {
@@ -177,10 +177,14 @@ const renderSongs = () => {
     const item = document.createElement("article");
     item.className = "song-item";
     item.id = song.id;
+    const mediaType = song.file.toLowerCase().endsWith(".mp4")
+      ? "audio/mp4"
+      : "audio/mpeg";
     item.innerHTML = `
       <h2>${song.title}</h2>
-      <audio controls>
-        <source src="${song.file}" type="audio/mpeg" />
+      <audio controls preload="metadata">
+        <source src="${song.file}" type="${mediaType}" />
+        Your browser cannot play this track.
       </audio>
       <p class="song-note">${song.note}</p>
     `;
@@ -240,6 +244,7 @@ const initNoteFocus = () => {
     <div class="crystal-heart-field" aria-hidden="true"></div>
     <button class="note-focus-nav previous" type="button" aria-label="Previous note">&lsaquo;</button>
     <article class="note-focus-card" role="dialog" aria-modal="true" aria-label="Opened note">
+      <button class="note-focus-close" type="button" aria-label="Close note">&times;</button>
       <p></p>
     </article>
     <button class="note-focus-nav next" type="button" aria-label="Next note">&rsaquo;</button>
@@ -249,9 +254,11 @@ const initNoteFocus = () => {
   const heartField = focusOverlay.querySelector(".crystal-heart-field");
   const focusCard = focusOverlay.querySelector(".note-focus-card");
   const focusText = focusCard.querySelector("p");
+  const closeBtn = focusOverlay.querySelector(".note-focus-close");
   const previousBtn = focusOverlay.querySelector(".previous");
   const nextBtn = focusOverlay.querySelector(".next");
   let activeIndex = -1;
+  let lastFocusedElement = null;
   let touchStartX = 0;
   let touchStartY = 0;
 
@@ -269,6 +276,7 @@ const initNoteFocus = () => {
     const visibleNotes = getVisibleNotes();
     if (!visibleNotes.length) return;
 
+    if (activeIndex === -1) lastFocusedElement = document.activeElement;
     activeIndex = (index + visibleNotes.length) % visibleNotes.length;
     const activeNoteText = visibleNotes[activeIndex].text;
     focusCard.dataset.noteNumber = String(activeIndex + 1).padStart(2, "0");
@@ -278,6 +286,7 @@ const initNoteFocus = () => {
     focusOverlay.classList.add("is-visible");
     focusOverlay.setAttribute("aria-hidden", "false");
     document.body.classList.add("note-focus-open");
+    closeBtn.focus();
   };
 
   const closeNote = () => {
@@ -285,6 +294,8 @@ const initNoteFocus = () => {
     focusOverlay.classList.remove("is-visible");
     focusOverlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("note-focus-open");
+    if (lastFocusedElement instanceof HTMLElement) lastFocusedElement.focus();
+    lastFocusedElement = null;
   };
 
   const moveNote = (direction) => {
@@ -318,6 +329,7 @@ const initNoteFocus = () => {
   });
 
   focusCard.addEventListener("click", (event) => event.stopPropagation());
+  closeBtn.addEventListener("click", closeNote);
   previousBtn.addEventListener("click", (event) => {
     event.stopPropagation();
     moveNote(-1);

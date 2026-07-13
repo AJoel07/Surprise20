@@ -6,7 +6,49 @@ const songs = [
     id: "1",
     title: "Perfect - Ed Sheeran",
     file:  "assets/Ed Sheeran - Perfect - Ringtone.mp3",
-    note: "Love"
+    note: ""
+  },
+  {
+    id: "2",
+    title: "Mudhal Nee Mudivum Nee",
+    file:  "assets/mudhal nee mudivum nee.mp3",
+    note: ""
+  },
+  {
+    id: "3",
+    title: "Aariro Aarariro",
+    file:  "assets/aariro aarariro.mp3",
+    note: ""
+  },
+  {
+    id: "4",
+    title: "Neeyum Naanum",
+    file:  "assets/NEEYUM NAANUM.mp3",
+    note: ""
+  },
+  {
+    id: "5",
+    title: "Pathavaikkum Paarvaikkaara",
+    file:  "assets/pathavaikkum paarvaikaara.mp3",
+    note: ""
+  },
+  {
+    id: "6",
+    title: "Un Viligalil",
+    file:  "assets/un viligalil.mp3",
+    note: ""
+  },
+  {
+    id: "7",
+    title: "Un Viligalil Viluntha Naatkalil",
+    file:  "assets/un viligalil viluntha naatkal.mp3",
+    note: ""
+  },
+  {
+    id: "8",
+    title: "kaadhal Aasai",
+    file:  "assets/Kaadhal aasai.mp4",
+    note: ""
   },
   
 ];

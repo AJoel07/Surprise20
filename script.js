@@ -91,6 +91,27 @@ const protectPage = () => {
   }
 };
 
+const emojiCache = {};
+const emojisList = ['🎈', '🎂', '🎁', '🎉', '💖', '✨', '⭐'];
+
+const initEmojiCache = () => {
+  const size = 64; // Reference high-res size
+  emojisList.forEach((emoji) => {
+    const offscreen = document.createElement("canvas");
+    offscreen.width = size;
+    offscreen.height = size;
+    const oCtx = offscreen.getContext("2d");
+    oCtx.font = `${size - 16}px sans-serif`;
+    oCtx.textAlign = "center";
+    oCtx.textBaseline = "middle";
+    oCtx.fillText(emoji, size / 2, size / 2);
+    emojiCache[emoji] = offscreen;
+  });
+};
+
+// Initialize cache immediately on script execution
+initEmojiCache();
+
 class Particle {
   constructor(x, y, type, color, emoji) {
     this.x = x;
@@ -128,10 +149,16 @@ class Particle {
     ctx.rotate(this.rotation);
 
     if (this.type === 'emoji') {
-      ctx.font = `${this.size * 2}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(this.emoji, 0, 0);
+      const cachedCanvas = emojiCache[this.emoji];
+      if (cachedCanvas) {
+        const renderSize = this.size * 2;
+        ctx.drawImage(cachedCanvas, -renderSize / 2, -renderSize / 2, renderSize, renderSize);
+      } else {
+        ctx.font = `${this.size * 2}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(this.emoji, 0, 0);
+      }
     } else {
       ctx.fillStyle = this.color;
       const shapeType = this.emoji; // reuse emoji slot for shape name
@@ -249,20 +276,25 @@ const triggerBlast = () => {
     allowDismiss = true;
   }, 600);
 
+  let keydownHandler;
   const dismissAndRedirect = () => {
     if (!allowDismiss) return;
+    window.removeEventListener("resize", resizeCanvas);
+    document.removeEventListener("keydown", keydownHandler);
     document.body.classList.add("page-exit-transition");
     setTimeout(() => {
       window.location.href = "songs.html";
     }, 500);
   };
 
-  overlay.addEventListener("click", dismissAndRedirect);
-  document.addEventListener("keydown", (e) => {
+  keydownHandler = (e) => {
     if (["Enter", " ", "Escape"].includes(e.key)) {
       dismissAndRedirect();
     }
-  });
+  };
+
+  overlay.addEventListener("click", dismissAndRedirect);
+  document.addEventListener("keydown", keydownHandler);
 };
 
 const initGate = () => {

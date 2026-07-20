@@ -91,6 +91,180 @@ const protectPage = () => {
   }
 };
 
+class Particle {
+  constructor(x, y, type, color, emoji) {
+    this.x = x;
+    this.y = y;
+    this.type = type; // 'emoji' or 'shape'
+    this.color = color;
+    this.emoji = emoji;
+    this.size = type === 'emoji' ? Math.random() * 12 + 10 : Math.random() * 8 + 4;
+    
+    // Spread in all directions
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = Math.random() * 10 + 4;
+    this.speedX = Math.cos(angle) * velocity;
+    this.speedY = Math.sin(angle) * velocity - 3; // slight upward force
+    
+    this.gravity = 0.15;
+    this.opacity = 1;
+    this.decay = Math.random() * 0.012 + 0.008;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.spin = (Math.random() - 0.5) * 0.15;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.speedY += this.gravity;
+    this.opacity -= this.decay;
+    this.rotation += this.spin;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+
+    if (this.type === 'emoji') {
+      ctx.font = `${this.size * 2}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(this.emoji, 0, 0);
+    } else {
+      ctx.fillStyle = this.color;
+      const shapeType = this.emoji; // reuse emoji slot for shape name
+      if (shapeType === 'heart') {
+        ctx.beginPath();
+        const d = this.size;
+        ctx.moveTo(0, d / 4);
+        ctx.quadraticCurveTo(-d / 2, -d / 2, -d, d / 4);
+        ctx.quadraticCurveTo(-d, d, 0, d * 1.3);
+        ctx.quadraticCurveTo(d, d, d, d / 4);
+        ctx.quadraticCurveTo(d / 2, -d / 2, 0, d / 4);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shapeType === 'star') {
+        ctx.beginPath();
+        const spikes = 5;
+        const outerRadius = this.size;
+        const innerRadius = this.size / 2;
+        let rot = Math.PI / 2 * 3;
+        let sx = 0;
+        let sy = 0;
+        const step = Math.PI / spikes;
+
+        ctx.moveTo(0, -outerRadius);
+        for (let i = 0; i < spikes; i++) {
+          sx = Math.cos(rot) * outerRadius;
+          sy = Math.sin(rot) * outerRadius;
+          ctx.lineTo(sx, sy);
+          rot += step;
+
+          sx = Math.cos(rot) * innerRadius;
+          sy = Math.sin(rot) * innerRadius;
+          ctx.lineTo(sx, sy);
+          rot += step;
+        }
+        ctx.lineTo(0, -outerRadius);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+const triggerBlast = () => {
+  const overlay = document.getElementById("unlock-overlay");
+  const canvas = document.getElementById("blast-canvas");
+  if (!overlay || !canvas) return;
+
+  overlay.style.display = "flex";
+  // Force browser reflow to allow opacity transition
+  overlay.offsetHeight;
+  overlay.classList.add("active");
+
+  const ctx = canvas.getContext("2d");
+  const resizeCanvas = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const particles = [];
+  const emojisList = ['🎈', '🎂', '🎁', '🎉', '💖', '✨', '⭐'];
+  const shapeColors = ["#d94f8a", "#f6aac8", "#cbb7ff", "#ffd4bd", "#bdebd6", "#e8b95b", "#ffffff"];
+  const shapes = ['heart', 'star', 'dot'];
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  // Spawn 150 burst particles
+  for (let i = 0; i < 150; i++) {
+    const isEmoji = Math.random() > 0.45;
+    if (isEmoji) {
+      const emoji = emojisList[Math.floor(Math.random() * emojisList.length)];
+      particles.push(new Particle(centerX, centerY, 'emoji', '', emoji));
+    } else {
+      const color = shapeColors[Math.floor(Math.random() * shapeColors.length)];
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      particles.push(new Particle(centerX, centerY, 'shape', color, shape));
+    }
+  }
+
+  let animationFrameId;
+  const animate = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.update();
+      p.draw(ctx);
+
+      if (p.opacity <= 0) {
+        particles.splice(i, 1);
+      }
+    }
+
+    if (particles.length > 0) {
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      cancelAnimationFrame(animationFrameId);
+    }
+  };
+
+  animate();
+
+  // Allow clicking anywhere to redirect after a short delay (prevent accidental double tap)
+  let allowDismiss = false;
+  setTimeout(() => {
+    allowDismiss = true;
+  }, 600);
+
+  const dismissAndRedirect = () => {
+    if (!allowDismiss) return;
+    document.body.classList.add("page-exit-transition");
+    setTimeout(() => {
+      window.location.href = "songs.html";
+    }, 500);
+  };
+
+  overlay.addEventListener("click", dismissAndRedirect);
+  document.addEventListener("keydown", (e) => {
+    if (["Enter", " ", "Escape"].includes(e.key)) {
+      dismissAndRedirect();
+    }
+  });
+};
+
 const initGate = () => {
   const unlockBtn = document.getElementById("unlock-btn");
   const passwordInput = document.getElementById("password");
@@ -108,7 +282,16 @@ const initGate = () => {
     if (input === SECRET_PASSWORD) {
       sessionStorage.setItem(UNLOCK_KEY, "true");
       gateError.textContent = "";
-      window.location.href = "songs.html";
+      
+      const gateCard = document.querySelector(".gate-card");
+      if (gateCard) {
+        gateCard.classList.add("fade-out");
+        setTimeout(() => {
+          triggerBlast();
+        }, 300);
+      } else {
+        triggerBlast();
+      }
     } else {
       gateError.textContent = "That word does not feel right. Try again.";
     }
